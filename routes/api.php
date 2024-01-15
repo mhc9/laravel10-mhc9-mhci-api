@@ -18,4 +18,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+/** Hospitals */
 Route::get('/hospitals', 'App\Http\Controllers\HospitalController@getHospitals');
+
+/** Checkins */
+Route::get('/checkins', 'App\Http\Controllers\CheckinController@getCheckins');
