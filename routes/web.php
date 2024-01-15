@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use JfBiswajit\PHPBigQuery\Facades\BigQuery;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,11 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/big-query', function() {
-    $bqConf = BigQuery::query('SELECT * FROM simple_dataset.primary_care_hospital');
-
-    return view('bigquery', [
-        "test" => "Hello World!!",
-        "data" => $bigQuery
-    ]);
-});
+Route::get('/hospitals', 'App\Http\Controllers\HospitalController@index');
