@@ -11,7 +11,7 @@ class CheckinController extends Controller
     public function getCheckins()
     {
         $sql = 'SELECT * FROM `ecommerce-3ab6c.Covid.CheckIn`
-                WHERE province_id IN (30, 31, 32, 36)
+                WHERE province_id IN (19, 20, 21, 25)
                 ORDER By id DESC LIMIT 10';
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);
@@ -28,7 +28,7 @@ class CheckinController extends Controller
     /** #API GET /checkins/count */
     public function getCount()
     {
-        $sql = 'SELECT COUNT(id) as num FROM `ecommerce-3ab6c.Covid.CheckIn` WHERE province_id IN (30, 31, 32, 36)';
+        $sql = 'SELECT COUNT(id) as num FROM `ecommerce-3ab6c.Covid.CheckIn` WHERE province_id IN (19, 20, 21, 25)';
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);
         $rows = $queryResults->rows();
