@@ -23,3 +23,4 @@ Route::get('/hospitals', 'App\Http\Controllers\HospitalController@getHospitals')
 
 /** Checkins */
 Route::get('/checkins', 'App\Http\Controllers\CheckinController@getCheckins');
+Route::get('/checkins/count', 'App\Http\Controllers\CheckinController@getCount');

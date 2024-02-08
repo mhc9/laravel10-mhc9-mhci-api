@@ -24,4 +24,20 @@ class CheckinController extends Controller
 
         return response()->json($data);
     }
+
+    /** #API GET /checkins/count */
+    public function getCount()
+    {
+        $sql = 'SELECT COUNT(id) as num FROM `ecommerce-3ab6c.Covid.CheckIn` WHERE province_id IN (30, 31, 32, 36)';
+        $jobConfig = BigQuery::query($sql);
+        $queryResults = BigQuery::runQuery($jobConfig);
+        $rows = $queryResults->rows();
+
+        $data = [];
+        foreach ($rows as $row) {
+            array_push($data, $row);
+        }
+
+        return response()->json($data);
+    }
 }
