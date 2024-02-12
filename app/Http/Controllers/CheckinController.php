@@ -8,27 +8,52 @@ use JfBiswajit\PHPBigQuery\Facades\BigQuery;
 class CheckinController extends Controller
 {
     /** #API GET /checkins */
-    public function getCheckins()
+    public function getCheckins(Request $request)
     {
-        $sql = 'SELECT * FROM `ecommerce-3ab6c.Covid.CheckIn`
+        $perPage = 10;
+        $page = $request->get('page') ? $request->get('page') : 1;
+        $offset = ($page - 1) * $perPage;
+        $limit = $perPage;
+
+        $sql = "SELECT *, 
+                FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) as reg_date,
+                FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', date_create_trace) as trace_date
+                FROM `ecommerce-3ab6c.Covid.CheckIn`
                 WHERE province_id IN (19, 20, 21, 25)
-                ORDER By id DESC LIMIT 10';
+                AND (date_create_trace IS NOT NULL)
+                ORDER By id DESC LIMIT " .$limit. " OFFSET " .$offset;
+
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);
         $rows = $queryResults->rows();
 
+        $total = $this->count()[0]['num'];
         $data = [];
         foreach ($rows as $row) {
             array_push($data, $row);
         }
 
-        return response()->json($data);
+        return response()->json([
+            "currentPage"   => $page,
+            "data"          => $data,
+            "total"         => $total,
+            "from"          => $offset + 1,
+            "to"            => $offset + $perPage,
+            "lastPage"      => ceil($total / $perPage)
+        ]);
     }
 
     /** #API GET /checkins/count */
     public function getCount()
     {
-        $sql = 'SELECT COUNT(id) as num FROM `ecommerce-3ab6c.Covid.CheckIn` WHERE province_id IN (19, 20, 21, 25)';
+        return response()->json($this->count());
+    }
+
+    private function count()
+    {
+        $sql = "SELECT COUNT(id) as num
+                FROM `ecommerce-3ab6c.Covid.CheckIn`
+                WHERE province_id IN (19, 20, 21, 25)";
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);
         $rows = $queryResults->rows();
@@ -38,6 +63,6 @@ class CheckinController extends Controller
             array_push($data, $row);
         }
 
-        return response()->json($data);
+        return $data;
     }
 }
