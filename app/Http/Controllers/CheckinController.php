@@ -53,7 +53,7 @@ class CheckinController extends Controller
     {
         $sql = "SELECT COUNT(id) as num
                 FROM `ecommerce-3ab6c.Covid.CheckIn`
-                WHERE province_id IN (19, 20, 21, 25)";
+                WHERE province_id IN (19, 20, 21, 25) AND (date_create_trace IS NOT NULL)";
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);
         $rows = $queryResults->rows();
