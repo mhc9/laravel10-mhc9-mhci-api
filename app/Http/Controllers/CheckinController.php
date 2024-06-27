@@ -14,12 +14,14 @@ class CheckinController extends Controller
         $page = $request->get('page') ? $request->get('page') : 1;
         $offset = ($page - 1) * $perPage;
         $limit = $perPage;
+        $sdate = $request->get('sdate');
+        $edate = $request->get('edate');
 
         $sql = "SELECT *, 
                 FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) as reg_date,
                 FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', date_create_trace) as trace_date
                 FROM `ecommerce-3ab6c.Covid.CheckIn`
-                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '2024-05-01' AND '2024-06-27')
+                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate')
                 AND (name_province LIKE '%นครราชสีมา%')
                 ORDER By id DESC
                 LIMIT " .$limit. " OFFSET " .$offset;
@@ -30,7 +32,7 @@ class CheckinController extends Controller
         $queryResults = BigQuery::runQuery($jobConfig);
         $rows = $queryResults->rows();
 
-        $total = $this->count()[0]['num'];
+        $total = $this->count($sdate, $edate)[0]['num'];
         $data = [];
         foreach ($rows as $row) {
             array_push($data, $row);
@@ -52,11 +54,11 @@ class CheckinController extends Controller
         return response()->json($this->count());
     }
 
-    private function count()
+    private function count($sdate, $edate)
     {
         $sql = "SELECT COUNT(id) as num
                 FROM `ecommerce-3ab6c.Covid.CheckIn`
-                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '2024-05-01' AND '2024-06-27')
+                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate')
                 AND (name_province LIKE '%นครราชสีมา%')";
                 // WHERE province_id IN (19, 20, 21, 25)
                 // AND (date_create_trace IS NOT NULL)";
