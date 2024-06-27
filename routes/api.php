@@ -19,8 +19,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 /** Hospitals */
-Route::get('/hospitals', 'App\Http\Controllers\HospitalController@getHospitals');
+Route::get('/hospitals', [App\Http\Controllers\HospitalController::class, 'getHospitals']);
 
 /** Checkins */
-Route::get('/checkins', 'App\Http\Controllers\CheckinController@getCheckins');
-Route::get('/checkins/count', 'App\Http\Controllers\CheckinController@getCount');
+Route::get('/checkins', [App\Http\Controllers\CheckinController::class, 'getCheckins']);
+Route::get('/checkins/count', [App\Http\Controllers\CheckinController::class, 'getCount']);
+Route::get('/checkins/init/form', [App\Http\Controllers\CheckinController::class, 'getInitialFormData']);

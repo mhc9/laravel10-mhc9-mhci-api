@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use JfBiswajit\PHPBigQuery\Facades\BigQuery;
+use App\Models\Changwat;
+use App\Models\Amphur;
+use App\Models\Tambon;
 
 class CheckinController extends Controller
 {
@@ -76,5 +79,14 @@ class CheckinController extends Controller
         }
 
         return $data;
+    }
+
+    public function getInitialFormData()
+    {
+        return [
+            'changewats'    => Changwat::all(),
+            'amphurs'       => Amphur::all(),
+            'tambons'       => Tambon::all()
+        ];
     }
 }
