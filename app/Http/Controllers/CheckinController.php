@@ -19,9 +19,12 @@ class CheckinController extends Controller
                 FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) as reg_date,
                 FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', date_create_trace) as trace_date
                 FROM `ecommerce-3ab6c.Covid.CheckIn`
-                WHERE province_id IN (19, 20, 21, 25)
-                AND (date_create_trace IS NOT NULL)
-                ORDER By id DESC LIMIT " .$limit. " OFFSET " .$offset;
+                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '2024-05-01' AND '2024-06-27')
+                AND (name_province LIKE '%นครราชสีมา%')
+                ORDER By id DESC
+                LIMIT " .$limit. " OFFSET " .$offset;
+                // WHERE (province_id IN (19, 20, 21, 25))
+                // AND (date_create_trace IS NOT NULL)
 
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);
@@ -53,7 +56,10 @@ class CheckinController extends Controller
     {
         $sql = "SELECT COUNT(id) as num
                 FROM `ecommerce-3ab6c.Covid.CheckIn`
-                WHERE province_id IN (19, 20, 21, 25) AND (date_create_trace IS NOT NULL)";
+                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '2024-05-01' AND '2024-06-27')
+                AND (name_province LIKE '%นครราชสีมา%')";
+                // WHERE province_id IN (19, 20, 21, 25)
+                // AND (date_create_trace IS NOT NULL)";
 
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);
