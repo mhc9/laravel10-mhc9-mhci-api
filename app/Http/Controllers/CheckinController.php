@@ -52,7 +52,7 @@ class CheckinController extends Controller
     }
 
     /** #API GET /checkins/count */
-    public function getCount()
+    public function getCount(Request $request)
     {
         $sdate = $request->filled('sdate') ? $request->get('sdate') : '2024-06-01';
         $edate = $request->filled('edate') ? $request->get('edate') : '2024-06-30';
@@ -84,7 +84,7 @@ class CheckinController extends Controller
     public function getInitialFormData()
     {
         return [
-            'changewats'    => Changwat::all(),
+            'changwats'    => Changwat::all(),
             'amphurs'       => Amphur::all(),
             'tambons'       => Tambon::all()
         ];
