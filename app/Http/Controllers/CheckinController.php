@@ -17,15 +17,18 @@ class CheckinController extends Controller
         $page = $request->get('page') ? $request->get('page') : 1;
         $offset = ($page - 1) * $perPage;
         $limit = $perPage;
-        $sdate = $request->get('sdate');
-        $edate = $request->get('edate');
+        $changwat = $request->filled('changwat') ? explode('-', $request->get('changwat'))[1] : '';
+        $amphur = $request->filled('amphur') ? explode('-', $request->get('amphur'))[1] : '';
+        $tambon = $request->filled('tambon') ? explode('-', $request->get('tambon'))[1] : '';
+        $sdate = $request->filled('sdate') ? $request->get('sdate') : date('Y-m').'-01';
+        $edate = $request->filled('edate') ? $request->get('edate') : date('Y-m-t', strtotime($sdate));
 
         $sql = "SELECT *, 
                 FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) as reg_date,
                 FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', date_create_trace) as trace_date
                 FROM `ecommerce-3ab6c.Covid.CheckIn`
                 WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate')
-                AND (name_province LIKE '%นครราชสีมา%')
+                AND (name_province LIKE '%$changwat%')
                 ORDER By id DESC
                 LIMIT " .$limit. " OFFSET " .$offset;
                 // WHERE (province_id IN (19, 20, 21, 25))
@@ -35,7 +38,7 @@ class CheckinController extends Controller
         $queryResults = BigQuery::runQuery($jobConfig);
         $rows = $queryResults->rows();
 
-        $total = $this->count($sdate, $edate)[0]['num'];
+        $total = $this->count($changwat, $amphur, $tambon, $sdate, $edate)[0]['num'];
         $data = [];
         foreach ($rows as $row) {
             array_push($data, $row);
@@ -54,18 +57,21 @@ class CheckinController extends Controller
     /** #API GET /checkins/count */
     public function getCount(Request $request)
     {
-        $sdate = $request->filled('sdate') ? $request->get('sdate') : '2024-06-01';
-        $edate = $request->filled('edate') ? $request->get('edate') : '2024-06-30';
+        $changwat = $request->filled('changwat') ? explode('-', $request->get('changwat'))[1] : '';
+        $amphur = $request->filled('amphur') ? explode('-', $request->get('amphur'))[1] : '';
+        $tambon = $request->filled('tambon') ? explode('-', $request->get('tambon'))[1] : '';
+        $sdate = $request->filled('sdate') ? $request->get('sdate') : date('Y-m').'-01';
+        $edate = $request->filled('edate') ? $request->get('edate') : date('Y-m-t', strtotime($sdate));
 
-        return response()->json($this->count($sdate, $edate));
+        return response()->json($this->count($changwat, $amphur, $tambon, $sdate, $edate));
     }
 
-    private function count($sdate, $edate)
+    private function count($changwat, $amphur, $tambon, $sdate, $edate)
     {
         $sql = "SELECT COUNT(id) as num
                 FROM `ecommerce-3ab6c.Covid.CheckIn`
                 WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate')
-                AND (name_province LIKE '%นครราชสีมา%')";
+                AND (name_province LIKE '%$changwat%')";
                 // WHERE province_id IN (19, 20, 21, 25)
                 // AND (date_create_trace IS NOT NULL)";
 
