@@ -27,12 +27,15 @@ class CheckinController extends Controller
                 FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) as reg_date,
                 FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', date_create_trace) as trace_date
                 FROM `ecommerce-3ab6c.Covid.CheckIn`
-                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate')
-                AND (name_province LIKE '%$changwat%')
-                ORDER By id DESC
-                LIMIT " .$limit. " OFFSET " .$offset;
+                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate') ";
                 // WHERE (province_id IN (19, 20, 21, 25))
                 // AND (date_create_trace IS NOT NULL)
+
+        if (!empty($changwat)) { $sql .= "AND (name_province LIKE '%$changwat%') "; }
+        if (!empty($amphur)) { $sql .= "AND (name_amphure LIKE '%$amphur%') "; }
+        if (!empty($tambon)) { $sql .= "AND (name_district LIKE '%$tambon%') "; }
+
+        $sql .= "ORDER By id DESC LIMIT " .$limit. " OFFSET " .$offset;
 
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);
@@ -70,10 +73,13 @@ class CheckinController extends Controller
     {
         $sql = "SELECT COUNT(id) as num
                 FROM `ecommerce-3ab6c.Covid.CheckIn`
-                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate')
-                AND (name_province LIKE '%$changwat%')";
+                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate') ";
                 // WHERE province_id IN (19, 20, 21, 25)
                 // AND (date_create_trace IS NOT NULL)";
+
+        if (!empty($changwat)) { $sql .= "AND (name_province LIKE '%$changwat%') "; }
+        if (!empty($amphur)) { $sql .= "AND (name_amphure LIKE '%$amphur%') "; }
+        if (!empty($tambon)) { $sql .= "AND (name_district LIKE '%$tambon%') "; }
 
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);
