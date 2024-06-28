@@ -84,7 +84,7 @@ class CheckinController extends Controller
     public function getInitialFormData()
     {
         return [
-            'changwats'    => Changwat::all(),
+            'changwats'    => Changwat::whereIn('id', ['30', '31', '32', '36'])->get(),
             'amphurs'       => Amphur::all(),
             'tambons'       => Tambon::all()
         ];
