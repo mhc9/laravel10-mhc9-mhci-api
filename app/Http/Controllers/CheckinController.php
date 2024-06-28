@@ -31,7 +31,7 @@ class CheckinController extends Controller
                 // WHERE (province_id IN (19, 20, 21, 25))
                 // AND (date_create_trace IS NOT NULL)
 
-        if (!empty($changwat)) { $sql .= "AND (name_province LIKE '%$changwat%') "; }
+        $sql .= !empty($changwat) ? "AND (name_province LIKE '%$changwat%') " : "AND (name_province IN ('นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ')) ";
         if (!empty($amphur)) { $sql .= "AND (name_amphure LIKE '%$amphur%') "; }
         if (!empty($tambon)) { $sql .= "AND (name_district LIKE '%$tambon%') "; }
 
@@ -77,7 +77,7 @@ class CheckinController extends Controller
                 // WHERE province_id IN (19, 20, 21, 25)
                 // AND (date_create_trace IS NOT NULL)";
 
-        if (!empty($changwat)) { $sql .= "AND (name_province LIKE '%$changwat%') "; }
+        $sql .= !empty($changwat) ? "AND (name_province LIKE '%$changwat%') " : "AND (name_province IN ('นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ')) ";
         if (!empty($amphur)) { $sql .= "AND (name_amphure LIKE '%$amphur%') "; }
         if (!empty($tambon)) { $sql .= "AND (name_district LIKE '%$tambon%') "; }
 
