@@ -104,7 +104,7 @@ class CheckinController extends Controller
 
     public function getCountWithChangwats($sdate, $edate)
     {
-        $sql = "SELECT name_province as province,
+        $sql = "SELECT name_province as area,
                 COUNT(id) as total,
                 COUNT(CASE WHEN (st_5 >= 8) THEN id END) as st5,
                 COUNT(CASE WHEN (depression >= 7) THEN id END) as depression,
@@ -115,6 +115,32 @@ class CheckinController extends Controller
                 WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate')
                 AND (name_province IN ('นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ')) 
                 GROUP BY name_province";
+
+        $jobConfig = BigQuery::query($sql);
+        $queryResults = BigQuery::runQuery($jobConfig);
+        $rows = $queryResults->rows();
+
+        $data = [];
+        foreach ($rows as $row) {
+            array_push($data, $row);
+        }
+
+        return $data;
+    }
+
+    public function getCountWithAmphurs($sdate, $edate, $province)
+    {
+        $sql = "SELECT name_amphure as area,
+                COUNT(id) as total,
+                COUNT(CASE WHEN (st_5 >= 8) THEN id END) as st5,
+                COUNT(CASE WHEN (depression >= 7) THEN id END) as depression,
+                COUNT(CASE WHEN (sucide >= 1) THEN id END) as sucide,
+                COUNT(CASE WHEN (burnout1+burnout2+burnout3 >= 9) THEN id END) as burnout,
+                COUNT(CASE WHEN (ok = '1') THEN id END) as helped
+                FROM `ecommerce-3ab6c.Covid.CheckIn`
+                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate')
+                AND (name_province = '$province') 
+                GROUP BY name_amphure";
 
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);

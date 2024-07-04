@@ -26,3 +26,4 @@ Route::get('/checkins', [App\Http\Controllers\CheckinController::class, 'getChec
 Route::get('/checkins/count', [App\Http\Controllers\CheckinController::class, 'getCount']);
 Route::get('/checkins/init/form', [App\Http\Controllers\CheckinController::class, 'getInitialFormData']);
 Route::get('/checkins/{sdate}/{edate}/changwats', [App\Http\Controllers\CheckinController::class, 'getCountWithChangwats']);
+Route::get('/checkins/{sdate}/{edate}/{changwat}/amphurs', [App\Http\Controllers\CheckinController::class, 'getCountWithAmphurs']);
