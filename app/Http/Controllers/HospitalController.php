@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use JfBiswajit\PHPBigQuery\Facades\BigQuery;
+use App\Models\Changwat;
 
 class HospitalController extends Controller
 {
@@ -32,20 +33,6 @@ class HospitalController extends Controller
     /** #API GET /hospitals */
     public function getHospitals()
     {
-        $jobConfig = BigQuery::query('SELECT * FROM `custom-frame-138223.simple_dataset.primary_care_hospital` LIMIT 10');
-        $queryResults = BigQuery::runQuery($jobConfig);
-        $rows = $queryResults->rows();
-
-        $i = 0;
-        $data = [];
-        foreach ($rows as $row) {
-            if ($i > 0) {
-                array_push($data, $row);
-            }
-
-            $i++;
-        }
-
-        return response()->json($data);
+        return response()->json(Changwat::all());
     }
 }
