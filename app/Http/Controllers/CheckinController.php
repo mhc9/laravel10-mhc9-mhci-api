@@ -10,6 +10,31 @@ use App\Models\Tambon;
 
 class CheckinController extends Controller
 {
+    private function count($changwat, $amphur, $tambon, $sdate, $edate, $ageRange='')
+    {
+        $sql = "SELECT COUNT(id) as num
+                FROM `ecommerce-3ab6c.Covid.CheckIn`
+                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate') ";
+                // WHERE province_id IN (19, 20, 21, 25)
+                // AND (date_create_trace IS NOT NULL)";
+
+        $sql .= !empty($changwat) ? "AND (name_province LIKE '%$changwat%') " : "AND (name_province IN ('นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ')) ";
+        if (!empty($amphur)) { $sql .= "AND (name_amphure LIKE '%$amphur%') "; }
+        if (!empty($tambon)) { $sql .= "AND (name_district LIKE '%$tambon%') "; }
+        if (!empty($ageRange)) { $sql .= "AND (age BETWEEN $ageRange[0] AND $ageRange[1]) "; }
+
+        $jobConfig = BigQuery::query($sql);
+        $queryResults = BigQuery::runQuery($jobConfig);
+        $rows = $queryResults->rows();
+
+        $data = [];
+        foreach ($rows as $row) {
+            array_push($data, $row);
+        }
+
+        return $data;
+    }
+
     /** #API GET /checkins */
     public function getCheckins(Request $request)
     {
@@ -22,6 +47,7 @@ class CheckinController extends Controller
         $tambon = $request->filled('tambon') ? explode('-', $request->get('tambon'))[1] : '';
         $sdate = $request->filled('sdate') ? $request->get('sdate') : date('Y-m').'-01';
         $edate = $request->filled('edate') ? $request->get('edate') : date('Y-m-t', strtotime($sdate));
+        $ageRange = $request->filled('age_range') ? explode('-', $request->get('age_range')) : '';
 
         $sql = "SELECT *, 
                 FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) as reg_date,
@@ -34,6 +60,7 @@ class CheckinController extends Controller
         $sql .= !empty($changwat) ? "AND (name_province LIKE '%$changwat%') " : "AND (name_province IN ('นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ')) ";
         if (!empty($amphur)) { $sql .= "AND (name_amphure LIKE '%$amphur%') "; }
         if (!empty($tambon)) { $sql .= "AND (name_district LIKE '%$tambon%') "; }
+        if (!empty($ageRange)) { $sql .= "AND (age BETWEEN $ageRange[0] AND $ageRange[1]) "; }
 
         $sql .= "ORDER By id DESC LIMIT " .$limit. " OFFSET " .$offset;
 
@@ -41,7 +68,7 @@ class CheckinController extends Controller
         $queryResults = BigQuery::runQuery($jobConfig);
         $rows = $queryResults->rows();
 
-        $total = $this->count($changwat, $amphur, $tambon, $sdate, $edate)[0]['num'];
+        $total = $this->count($changwat, $amphur, $tambon, $sdate, $edate, $ageRange)[0]['num'];
         $data = [];
         foreach ($rows as $row) {
             array_push($data, $row);
@@ -67,30 +94,6 @@ class CheckinController extends Controller
         $edate = $request->filled('edate') ? $request->get('edate') : date('Y-m-t', strtotime($sdate));
 
         return response()->json($this->count($changwat, $amphur, $tambon, $sdate, $edate));
-    }
-
-    private function count($changwat, $amphur, $tambon, $sdate, $edate)
-    {
-        $sql = "SELECT COUNT(id) as num
-                FROM `ecommerce-3ab6c.Covid.CheckIn`
-                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate') ";
-                // WHERE province_id IN (19, 20, 21, 25)
-                // AND (date_create_trace IS NOT NULL)";
-
-        $sql .= !empty($changwat) ? "AND (name_province LIKE '%$changwat%') " : "AND (name_province IN ('นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ')) ";
-        if (!empty($amphur)) { $sql .= "AND (name_amphure LIKE '%$amphur%') "; }
-        if (!empty($tambon)) { $sql .= "AND (name_district LIKE '%$tambon%') "; }
-
-        $jobConfig = BigQuery::query($sql);
-        $queryResults = BigQuery::runQuery($jobConfig);
-        $rows = $queryResults->rows();
-
-        $data = [];
-        foreach ($rows as $row) {
-            array_push($data, $row);
-        }
-
-        return $data;
     }
 
     public function getInitialFormData()
