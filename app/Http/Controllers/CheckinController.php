@@ -130,7 +130,7 @@ class CheckinController extends Controller
 
     public function getCountWithAmphurs($sdate, $edate, $province)
     {
-        $sql = "SELECT name_amphure as area,
+        $sql = "SELECT name_province as province, name_amphure as area,
                 COUNT(id) as total,
                 COUNT(CASE WHEN (st_5 >= 8) THEN id END) as st5,
                 COUNT(CASE WHEN (depression >= 7) THEN id END) as depression,
@@ -140,7 +140,7 @@ class CheckinController extends Controller
                 FROM `ecommerce-3ab6c.Covid.CheckIn`
                 WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate')
                 AND (name_province = '$province') 
-                GROUP BY name_amphure";
+                GROUP BY name_province, name_amphure";
 
         $jobConfig = BigQuery::query($sql);
         $queryResults = BigQuery::runQuery($jobConfig);
