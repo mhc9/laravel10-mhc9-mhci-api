@@ -26,6 +26,9 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/hospitals', [App\Http\Controllers\HospitalController::class, 'getHospitals']);
 });
 
+/** ## Using Client Credentials Grant */
+Route::get('/changwats', [App\Http\Controllers\HospitalController::class, 'getHospitals'])->middleware('client');
+
 /** Checkins */
 Route::get('/checkins', [App\Http\Controllers\CheckinController::class, 'getCheckins']);
 Route::get('/checkins/count', [App\Http\Controllers\CheckinController::class, 'getCount']);
