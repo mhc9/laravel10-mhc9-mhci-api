@@ -35,3 +35,15 @@ Route::group(['middleware' => 'auth:api'], function() {
 
 /** ## Using Client Credentials Grant */
 Route::get('/changwats', [App\Http\Controllers\HospitalController::class, 'getHospitals'])->middleware('client');
+
+/** Check db connection */
+Route::get('/db-connection', function () {
+    try {
+        $dbconnect = \DB::connection()->getPDO();
+        $dbname = \DB::connection()->getDatabaseName();
+
+        echo "Connected successfully to the database. Database name is :".$dbname;
+    } catch(Exception $e) {
+        echo $e->getMessage();
+    }
+});
