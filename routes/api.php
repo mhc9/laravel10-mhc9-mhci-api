@@ -22,6 +22,10 @@ Route::post('login', [App\Http\Controllers\AuthController::class, 'login']);
 Route::post('register', [App\Http\Controllers\AuthController::class, 'register']);
 
 Route::group(['middleware' => 'auth:api'], function() {
+    Route::get('/me', function (Request $request) {
+        return $request->user();
+    });
+
     /** Hospitals */
     Route::get('/hospitals', [App\Http\Controllers\HospitalController::class, 'getHospitals']);
 
