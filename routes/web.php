@@ -17,12 +17,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/401', function () {
-    return view('401');
-})->name('401');
+Auth::routes();
 
-Route::get('/login', function () {
-    return view('authorize');
-})->name('login');
+// Route::get('/401', function () {
+//     return view('401');
+// })->name('401');
 
+// Route::get('/login', function () {
+//     return view('authorize');
+// })->name('login');
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/hospitals', 'App\Http\Controllers\HospitalController@index');
