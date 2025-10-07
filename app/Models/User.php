@@ -52,4 +52,29 @@ class User extends Authenticatable
     {
         return Hash::check($password, $this->password);
     }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id', 'id');
+    }
+
+    public function permissions()
+    {
+        return $this->hasMany(UserPermission::class, 'user_id', 'id');
+    }
+
+    public function isAdmin()
+    {
+        return $this->permissions()->where('role_id', 1)->exists();
+    }
+
+    public function isFinancial()
+    {
+        return $this->permissions()->where('role_id', 4)->exists();
+    }
+
+    public function isParcel()
+    {
+        return $this->permissions()->where('role_id', 3)->exists();
+    }
 }

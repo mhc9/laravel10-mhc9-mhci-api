@@ -59,4 +59,14 @@ class AuthController extends Controller
 
         return response()->json(['success'=>$success], $this->successStatus);
     }
+
+    /**
+    * Get the authenticated User.
+    *
+    * @return \Illuminate\Http\JsonResponse
+    */
+    public function me()
+    {
+        return response()->json(auth()->user()->load('permissions','employee','employee.prefix','employee.position','employee.level'));
+    }
 }
