@@ -156,4 +156,31 @@ class CheckinController extends Controller
 
         return $data;
     }
+
+    public function getCountWithTambons($sdate, $edate, $province, $amphur)
+    {
+        $sql = "SELECT name_province as province, name_amphure as area,
+                COUNT(id) as total,
+                COUNT(CASE WHEN (st_5 >= 8) THEN id END) as st5,
+                COUNT(CASE WHEN (depression >= 7) THEN id END) as depression,
+                COUNT(CASE WHEN (sucide >= 1) THEN id END) as sucide,
+                COUNT(CASE WHEN (burnout1+burnout2+burnout3 >= 9) THEN id END) as burnout,
+                COUNT(CASE WHEN (ok = '1') THEN id END) as helped
+                FROM `ecommerce-3ab6c.Covid.CheckIn`
+                WHERE (FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', data_create) BETWEEN '$sdate' AND '$edate')
+                AND (name_province = '$province')
+                AND (name_amphure = '$amphur')
+                GROUP BY name_province, name_amphure, name_district";
+
+        $jobConfig = BigQuery::query($sql);
+        $queryResults = BigQuery::runQuery($jobConfig);
+        $rows = $queryResults->rows();
+
+        $data = [];
+        foreach ($rows as $row) {
+            array_push($data, $row);
+        }
+
+        return $data;
+    }
 }
