@@ -37,6 +37,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/checkins/init/form', [App\Http\Controllers\CheckinController::class, 'getInitialFormData']);
     Route::get('/checkins/{sdate}/{edate}/changwats', [App\Http\Controllers\CheckinController::class, 'getCountWithChangwats']);
     Route::get('/checkins/{sdate}/{edate}/{changwat}/amphurs', [App\Http\Controllers\CheckinController::class, 'getCountWithAmphurs']);
+    Route::get('/checkins/{sdate}/{edate}/{changwat}/{amphurs}/tambons', [App\Http\Controllers\CheckinController::class, 'getCountWithTambons']);
 });
 
 /** ## Using Client Credentials Grant */
