@@ -159,7 +159,7 @@ class CheckinController extends Controller
 
     public function getCountWithTambons($sdate, $edate, $province, $amphur)
     {
-        $sql = "SELECT name_province as province, name_amphure as area,
+        $sql = "SELECT name_province as province, name_amphure as area, name_district as tambon,
                 COUNT(id) as total,
                 COUNT(CASE WHEN (st_5 >= 8) THEN id END) as st5,
                 COUNT(CASE WHEN (depression >= 7) THEN id END) as depression,
