@@ -44,10 +44,15 @@ Route::group(['middleware' => 'auth:api'], function() {
 Route::get('/changwats', [App\Http\Controllers\HospitalController::class, 'getHospitals'])->middleware('client');
 
 /** Check db connection */
-Route::get('/db-connection', function () {
+Route::get('/db-connection/{dbname}', function ($dbname) {
     try {
-        $dbconnect = \DB::connection()->getPDO();
-        $dbname = \DB::connection()->getDatabaseName();
+        if ($dbname == 0) {
+            $dbconnect = \DB::connection()->getPDO();
+            $dbname = \DB::connection()->getDatabaseName();
+        } else {
+            $dbconnect = \DB::connection($dbname)->getPDO();
+            $dbname = \DB::connection($dbname)->getDatabaseName();
+        }
 
         echo "Connected successfully to the database. Database name is :".$dbname;
     } catch(Exception $e) {
